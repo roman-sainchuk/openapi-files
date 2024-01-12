@@ -47,7 +47,7 @@ jobs:
             #   --message "$MESSAGE" \
             #   --domain 'https://app.lab1.blueharvest.cloud'`
             echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, IS_MAIN_BRANCH: $IS_MAIN_BRANCH";
-            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
+            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR_EMAIL: $AUTHOR_EMAIL, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
             echo "COMMIT_TIMESTAMP: $COMMIT_TIMESTAMP, REPOSITORY: $REPOSITORY, COMMIT_URL: $COMMIT_URL, NAMESPACE: $NAMESPACE"
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
