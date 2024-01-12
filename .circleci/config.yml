@@ -16,6 +16,7 @@ jobs:
       PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
       CURRENT_BRANCH: << pipeline.git.branch >>
       COMMIT_SHA: << pipeline.git.revision >>
+      REPO_URL: << pipeline.project.git_url >>
     steps:
       - checkout
       - run:
@@ -24,7 +25,7 @@ jobs:
           command: |-
             REMOTE_INFO="$(git remote show $(git remote))";
             DEFAULT_BRANCH=$(echo "$REMOTE_INFO" | sed -n '/HEAD branch/s/.*: //p');
-            REPO_URL=$(echo "$REMOTE_INFO" | sed -n '/Push  URL/s/.*: //p' | sed -n 's/\.git//p');
+            # REPO_URL=$(echo "$REMOTE_INFO" | sed -n '/Push  URL/s/.*: //p' | sed -n 's/\.git//p');
             REPOSITORY=$(basename $REPO_URL);
             AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
             MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
