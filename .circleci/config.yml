@@ -16,16 +16,19 @@ jobs:
       PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
       CURRENT_BRANCH: << pipeline.git.branch >>
       COMMIT_SHA: << pipeline.git.revision >>
-      COMMIT_AUTHOR_NAME: << pipeline.trigger_parameters.github_app.commit_author_name >>
-      COMMIT_AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.commit_author_email >>
-      COMMIT_TIMESTAMP: << pipeline.trigger_parameters.gitlab.commit_timestamp >>
     steps:
       - checkout
       - run:
           name: "Push"
           
           command: |-
-          
+            DEFAULT_BRANCH="$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')";
+            AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
+            MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
+            COMMIT_TIMESTAMP="$(git log --format=%ci $COMMIT_SHA^!)";
+            REPOSITORY="$CIRCLE_PROJECT_REPONAME";
+            NAMESPACE=""
+            COMMIT_URL="$CIRCLE_REPOSITORY_URL/commit/$COMMIT_SHA"
            
             
             IS_MAIN_BRANCH=false;
@@ -49,7 +52,7 @@ jobs:
             #   --message "$MESSAGE" \
             #   --domain 'https://app.lab1.blueharvest.cloud'`
             echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, IS_MAIN_BRANCH: $IS_MAIN_BRANCH";
-            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR_EMAIL: $AUTHOR_EMAIL, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
+            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
             echo "COMMIT_TIMESTAMP: $COMMIT_TIMESTAMP, REPOSITORY: $REPOSITORY, COMMIT_URL: $COMMIT_URL, NAMESPACE: $NAMESPACE"
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
