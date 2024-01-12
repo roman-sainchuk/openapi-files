@@ -16,9 +16,10 @@ jobs:
       PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
       CURRENT_BRANCH: << pipeline.git.branch >>
       COMMIT_SHA: << pipeline.git.revision >>
-      AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.commit_author_email >>
-      DEFAULT_BRANCH: << pipeline.trigger_parameters.github_app.repo_name >>
-      REPOSITORY: << pipeline.trigger_parameters.github_app.project_id >>
+      COMMIT_AUTHOR_NAME: << pipeline.trigger_parameters.github_app.commit_author_name >>
+      COMMIT_AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.commit_author_email >>
+      DEFAULT_BRANCH: << pipeline.trigger_parameters.github_app.default_branch >>
+      REPOSITORY: << pipeline.trigger_parameters.github_app.repo_name >>
     steps:
       - checkout
       - run:
