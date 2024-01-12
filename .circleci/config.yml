@@ -18,6 +18,7 @@ jobs:
       COMMIT_SHA: << pipeline.git.revision >>
       AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.commit_author_email >>
       DEFAULT_BRANCH: << pipeline.trigger_parameters.github_app.repo_name >>
+      REPOSITORY: << pipeline.trigger_parameters.github_app.project_id >>
     steps:
       - checkout
       - run:
