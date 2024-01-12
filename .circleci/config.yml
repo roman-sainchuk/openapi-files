@@ -23,19 +23,19 @@ jobs:
           command: |-
           
             if [[ $PROVIDER == 'github_app' ]]; then
-              DEFAULT_BRANCH="<< pipeline.trigger_parameters.github_app.default_branch >>"; 
-              AUTHOR="<< pipeline.trigger_parameters.github_app.commit_author_name >> <<< pipeline.trigger_parameters.github_app.commit_author_email >>>"
-              COMMIT_TIMESTAMP="<< pipeline.trigger_parameters.github_app.commit_timestamp >>";
-              REPOSITORY="<< pipeline.trigger_parameters.github_app.project_id >>"
-              NAMESPACE="<< pipeline.trigger_parameters.github_app.repo_name >>";
-              COMMIT_URL="<< pipeline.trigger_parameters.github_app.web_url >>/commit/$COMMIT_SHA";
+              DEFAULT_BRANCH="<< trigger_parameters.github_app.default_branch >>"; 
+              AUTHOR="<< trigger_parameters.github_app.commit_author_name >> <<< trigger_parameters.github_app.commit_author_email >>>"
+              COMMIT_TIMESTAMP="<< trigger_parameters.github_app.commit_timestamp >>";
+              REPOSITORY="<< trigger_parameters.github_app.project_id >>"
+              NAMESPACE="<< trigger_parameters.github_app.repo_name >>";
+              COMMIT_URL="<< trigger_parameters.github_app.web_url >>/commit/$COMMIT_SHA";
             elif [[ $PROVIDER == 'gitlab' ]]; then
-              DEFAULT_BRANCH="<< pipeline.trigger_parameters.gitlab.default_branch >>"; 
-              AUTHOR="<< pipeline.trigger_parameters.gitlab.commit_author_name >> <<< pipeline.trigger_parameters.gitlab.commit_author_email >>>"
-              COMMIT_TIMESTAMP="<< pipeline.trigger_parameters.gitlab.commit_timestamp >>";
-              NAMESPACE="<< pipeline.trigger_parameters.gitlab.repo_name >>"
-              REPOSITORY="<< pipeline.trigger_parameters.gitlab.project_id >>"
-              COMMIT_URL="<< pipeline.trigger_parameters.gitlab.web_url >>/commit/$COMMIT_SHA";
+              DEFAULT_BRANCH="<< trigger_parameters.gitlab.default_branch >>"; 
+              AUTHOR="<< trigger_parameters.gitlab.commit_author_name >> <<< trigger_parameters.gitlab.commit_author_email >>>"
+              COMMIT_TIMESTAMP="<< trigger_parameters.gitlab.commit_timestamp >>";
+              NAMESPACE="<< trigger_parameters.gitlab.repo_name >>"
+              REPOSITORY="<< trigger_parameters.gitlab.project_id >>"
+              COMMIT_URL="<< trigger_parameters.gitlab.web_url >>/commit/$COMMIT_SHA";
             else
               DEFAULT_BRANCH="$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')";
               AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
