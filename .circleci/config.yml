@@ -17,12 +17,19 @@ jobs:
           name: "Push"
           environment: 
             VCS: << pipeline.project.type >>
+            PROVIDER: pipeline.trigger_parameters.circleci.trigger_type
             CURRENT_BRANCH: << pipeline.git.branch >>
             COMMIT_SHA: << pipeline.git.revision >>
           command: |-
           
             DEFAULT_BRANCH="$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')";
             AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
+            MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
+            IS_MAIN_BRANCH=false;
+
+            if [[ $DEFAULT_BRANCH == $CURRENT_BRANCH ]]; then
+              IS_MAIN_BRANCH=true;
+            fi 
             
           
             # pushId=`npm run -s push -- docs/s-petstore.yaml \
@@ -35,9 +42,9 @@ jobs:
             #   --commitUrl "${{ github.event.head_commit.url }}" \
             #   --namespace "${{ github.event.repository.owner.login }}" \
             #   --repository "${{ github.event.repository.name }}" \
-            #   --message "${{ github.event.head_commit.message }}" \
+            #   --message "$MESSAGE" \
             #   --domain 'https://app.lab1.blueharvest.cloud'`
-            echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR";
+            echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE";
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
