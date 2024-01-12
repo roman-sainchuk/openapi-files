@@ -19,7 +19,7 @@ jobs:
       COMMIT_AUTHOR_NAME: << pipeline.trigger_parameters.github_app.commit_author_name >>
       COMMIT_AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.commit_author_email >>
       COMMIT_TIMESTAMP: << pipeline.trigger_parameters.github_app.commit_timestamp >>
-      REPOSITORY: << pipeline.trigger_parameters.github_app.repo_name >>
+      REPOSITORY: << pipeline.trigger_parameters.gitlab.repo_name >>
     steps:
       - checkout
       - run:
