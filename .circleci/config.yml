@@ -22,11 +22,32 @@ jobs:
             COMMIT_SHA: << pipeline.git.revision >>
           command: |-
           
-            DEFAULT_BRANCH="$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')";
-            AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
-            MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
-            IS_MAIN_BRANCH=false;
+            if [[ $PROVIDER == 'github_app' ]]; then
+              DEFAULT_BRANCH="<< pipeline.trigger_parameters.github_app.default_branch >>"; 
+              AUTHOR="<< pipeline.trigger_parameters.github_app.commit_author_name >> <<< pipeline.trigger_parameters.github_app.commit_author_email >>>"
+              COMMIT_TIMESTAMP="<< pipeline.trigger_parameters.github_app.commit_timestamp >>";
+              REPOSITORY="<< pipeline.trigger_parameters.github_app.project_id >>"
+              NAMESPACE="<< pipeline.trigger_parameters.github_app.repo_name >>";
+              COMMIT_URL="<< pipeline.trigger_parameters.github_app.web_url >>/commit/$COMMIT_SHA";
+            elif [[ $PROVIDER == 'gitlab' ]]; then
+              DEFAULT_BRANCH="<< pipeline.trigger_parameters.gitlab.default_branch >>"; 
+              AUTHOR="<< pipeline.trigger_parameters.gitlab.commit_author_name >> <<< pipeline.trigger_parameters.gitlab.commit_author_email >>>"
+              COMMIT_TIMESTAMP="<< pipeline.trigger_parameters.gitlab.commit_timestamp >>";
+              NAMESPACE="<< pipeline.trigger_parameters.gitlab.repo_name >>"
+              REPOSITORY="<< pipeline.trigger_parameters.gitlab.project_id >>"
+              COMMIT_URL="<< pipeline.trigger_parameters.gitlab.web_url >>/commit/$COMMIT_SHA";
+            else
+              DEFAULT_BRANCH="$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')";
+              AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
+              MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
+              COMMIT_TIMESTAMP="$(git log --format=%ci $COMMIT_SHA^!)";
+              REPOSITORY="$(basename `git rev-parse --show-toplevel`)";
+              NAMESPACE=""
+              COMMIT_URL=""
+            fi
 
+            IS_MAIN_BRANCH=false;
+            
             if [[ $DEFAULT_BRANCH == $CURRENT_BRANCH ]]; then
               IS_MAIN_BRANCH=true;
             fi 
@@ -39,12 +60,15 @@ jobs:
             #   --isMainBranch $IS_MAIN_BRANCH \
             #   --branch "$CURRENT_BRANCH" \
             #   --author "$AUTHOR" \
-            #   --commitUrl "${{ github.event.head_commit.url }}" \
-            #   --namespace "${{ github.event.repository.owner.login }}" \
-            #   --repository "${{ github.event.repository.name }}" \
+            #   --commitUrl "$COMMIT_URL" \
+            #   --createdAt "$COMMIT_TIMESTAMP"
+            #   --namespace "$NAMESPACE" \
+            #   --repository "$REPOSITORY" \
             #   --message "$MESSAGE" \
             #   --domain 'https://app.lab1.blueharvest.cloud'`
-            echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
+            echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, IS_MAIN_BRANCH: $IS_MAIN_BRANCH";
+            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
+            echo "COMMIT_TIMESTAMP: $COMMIT_TIMESTAMP, REPOSITORY: $REPOSITORY, COMMIT_URL: $COMMIT_URL, NAMESPACE: $NAMESPACE"
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
