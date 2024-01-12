@@ -22,11 +22,12 @@ jobs:
           name: "Push"
           
           command: |-
-            DEFAULT_BRANCH="$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')";
+            REMOTE_INFO="$(git remote show $(git remote))";
+            DEFAULT_BRANCH="echo $REMOTE_INFO | sed -n '/HEAD branch/s/.*: //p'";
+            REPOSITORY="echo $REMOTE_INFO | sed -n '/Push  URL/s/.*: //p' | basename";
             AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
             MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
             COMMIT_TIMESTAMP="$(git log --format=%ci $COMMIT_SHA^!)";
-            REPOSITORY="$CIRCLE_PROJECT_REPONAME";
             NAMESPACE=""
             COMMIT_URL="$CIRCLE_REPOSITORY_URL/commit/$COMMIT_SHA"
            
