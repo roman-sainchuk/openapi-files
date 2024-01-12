@@ -1,26 +1,46 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
+  push:
     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
+    # TODO: use redocly/cli image
       - image: cimg/base:stable
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-
+          name: "Push"
+          environment: 
+            VCS: << pipeline.project.type >>
+            CURRENT_BRANCH: << pipeline.git.branch >>
+            COMMIT_SHA: << pipeline.git.revision >>
+          command: |-
+          
+            DEFAULT_BRANCH="$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')";
+            AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
+            
+          
+            # pushId=`npm run -s push -- docs/s-petstore.yaml \
+            #   --organization 'default' \
+            #   --project 'pushes-demo' \
+            #   --mountPath 'docs/remotes/cicd' \
+            #   --isMainBranch $IS_MAIN_BRANCH \
+            #   --branch "$CURRENT_BRANCH" \
+            #   --author "$AUTHOR" \
+            #   --commitUrl "${{ github.event.head_commit.url }}" \
+            #   --namespace "${{ github.event.repository.owner.login }}" \
+            #   --repository "${{ github.event.repository.name }}" \
+            #   --message "${{ github.event.head_commit.message }}" \
+            #   --domain 'https://app.lab1.blueharvest.cloud'`
+            echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR";
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  push-to-redocly:
     jobs:
-      - say-hello
+      - push
