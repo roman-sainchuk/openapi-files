@@ -24,7 +24,8 @@ jobs:
           command: |-
             REMOTE_INFO="$(git remote show $(git remote))";
             DEFAULT_BRANCH=$(echo "$REMOTE_INFO" | sed -n '/HEAD branch/s/.*: //p');
-            REPOSITORY=$(basename $(echo "$REMOTE_INFO" | sed -n '/Push  URL/s/.*: //p'));
+            REPO_URL=$(echo "$REMOTE_INFO" | sed -n '/Push  URL/s/.*: //p' | sed -n '/\.git//p');
+            REPOSITORY=$(basename $REPO_URL);
             AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
             MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
             COMMIT_TIMESTAMP="$(git log --format=%ci $COMMIT_SHA^!)";
