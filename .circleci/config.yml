@@ -34,7 +34,7 @@ jobs:
             NAMESPACE=""
 
             if [[ $PROVIDER == 'github_app' ]]; then
-              NAMESPACE="$(echo "$REPO_URL" | sed "s/$REPOSITORY//p")"
+              NAMESPACE="$(basename $(echo "$REPO_URL" | sed "s/$REPOSITORY//p"))"
             elif [[ $PROVIDER == 'gitlab' ]]; then
               NAMESPACE=""
             fi
