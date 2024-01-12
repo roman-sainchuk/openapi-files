@@ -11,15 +11,17 @@ jobs:
       - image: cimg/base:stable
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
+    environment: 
+      VCS: << pipeline.project.type >>
+      PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
+      CURRENT_BRANCH: << pipeline.git.branch >>
+      COMMIT_SHA: << pipeline.git.revision >>
+      AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.commit_author_email >>
     steps:
       - checkout
       - run:
           name: "Push"
-          environment: 
-            VCS: << pipeline.project.type >>
-            PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
-            CURRENT_BRANCH: << pipeline.git.branch >>
-            COMMIT_SHA: << pipeline.git.revision >>
+          
           command: |-
           
            
