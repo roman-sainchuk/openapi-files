@@ -30,7 +30,7 @@ jobs:
             MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
             COMMIT_TIMESTAMP="$(git log --format=%ci $COMMIT_SHA^!)";
             NAMESPACE=""
-            COMMIT_URL="$CIRCLE_REPOSITORY_URL/commit/$COMMIT_SHA"
+            COMMIT_URL="$REPO_URL/commit/$COMMIT_SHA"
            
             
             IS_MAIN_BRANCH=false;
