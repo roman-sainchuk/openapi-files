@@ -20,8 +20,8 @@ jobs:
             PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
             CURRENT_BRANCH: << pipeline.git.branch >>
             COMMIT_SHA: << pipeline.git.revision >>
-            AUTHOR_EMAIL: << trigger_parameters.github_app.commit_author_email >>
-            DEFAULT_BRANCH: << trigger_parameters.github_app.default_branch >>
+            AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.commit_author_email >>
+            DEFAULT_BRANCH: << pipeline.trigger_parameters.github_app.default_branch >>
           command: |-
           
            
