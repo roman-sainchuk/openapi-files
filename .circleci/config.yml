@@ -20,7 +20,7 @@ jobs:
             PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
             CURRENT_BRANCH: << pipeline.git.branch >>
             COMMIT_SHA: << pipeline.git.revision >>
-            DEFAULT_BRANCH: << pipeline.trigger_parameters.github_app.default_branch >>
+            DEFAULT_BRANCH: << pipeline.trigger_parameters.github.default_branch >>
           command: |-
           
            
