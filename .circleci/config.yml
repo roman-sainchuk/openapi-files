@@ -17,7 +17,7 @@ jobs:
           name: "Push"
           environment: 
             VCS: << pipeline.project.type >>
-            PROVIDER: pipeline.trigger_parameters.circleci.trigger_type
+            PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
             CURRENT_BRANCH: << pipeline.git.branch >>
             COMMIT_SHA: << pipeline.git.revision >>
           command: |-
