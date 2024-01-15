@@ -35,7 +35,6 @@ jobs:
             MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
             COMMIT_TIMESTAMP="$(git log --format=%cI $COMMIT_SHA^!)";            
 
-
             NAMESPACE=""
 
             if [[ $PROVIDER == 'github_app' ]]; then
@@ -60,6 +59,7 @@ jobs:
               --isMainBranch $IS_MAIN_BRANCH \
               --branch "$CURRENT_BRANCH" \
               --author "$AUTHOR" \
+              --commitSha "$COMMIT_SHA" \
               --commitUrl "$COMMIT_URL" \
               --createdAt "$COMMIT_TIMESTAMP" \
               --namespace "$NAMESPACE" \
@@ -67,9 +67,6 @@ jobs:
               --message "$MESSAGE" \
               --domain 'https://app.lab1.blueharvest.cloud'`
 
-            echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, IS_MAIN_BRANCH: $IS_MAIN_BRANCH";
-            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
-            echo "COMMIT_TIMESTAMP: $COMMIT_TIMESTAMP, REPOSITORY: $REPOSITORY, COMMIT_URL: $COMMIT_URL, NAMESPACE: $NAMESPACE"
             echo "PUSH_ID: $PUSH_ID"
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
