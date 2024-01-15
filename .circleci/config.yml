@@ -19,6 +19,7 @@ jobs:
       CURRENT_BRANCH: << pipeline.git.branch >>
       COMMIT_SHA: << pipeline.git.revision >>
       REPO_URL: << pipeline.project.git_url >>
+      PROJECT_ID: << pipeline.trigger_parameters.gitlab.project_id >>
     steps:
       - checkout
       - node/install:
@@ -28,6 +29,10 @@ jobs:
           name: "Push"
 
           command: |-
+            echo "PROJECT_ID: $PROJECT_ID"
+
+
+
             REMOTE_INFO="$(git remote show $(git remote))";
             DEFAULT_BRANCH=$(echo "$REMOTE_INFO" | sed -n '/HEAD branch/s/.*: //p');
             REPOSITORY=$(basename $REPO_URL);
