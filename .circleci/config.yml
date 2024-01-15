@@ -53,25 +53,24 @@ jobs:
               IS_MAIN_BRANCH=true;
             fi
 
-            # pushId=`npm run -s push -- docs/s-petstore.yaml \
-            #   --organization 'default' \
-            #   --project 'pushes-demo' \
-            #   --mountPath 'docs/remotes/cicd' \
-            #   --isMainBranch $IS_MAIN_BRANCH \
-            #   --branch "$CURRENT_BRANCH" \
-            #   --author "$AUTHOR" \
-            #   --commitUrl "$COMMIT_URL" \
-            #   --createdAt "$COMMIT_TIMESTAMP"
-            #   --namespace "$NAMESPACE" \
-            #   --repository "$REPOSITORY" \
-            #   --message "$MESSAGE" \
-            #   --domain 'https://app.lab1.blueharvest.cloud'`
+            PUSH_ID=`npm run -s push -- docs \
+              --organization 'default' \
+              --project 'push-rework' \
+              --mountPath 'docs/remotes/cicd' \
+              --isMainBranch $IS_MAIN_BRANCH \
+              --branch "$CURRENT_BRANCH" \
+              --author "$AUTHOR" \
+              --commitUrl "$COMMIT_URL" \
+              --createdAt "$COMMIT_TIMESTAMP" \
+              --namespace "$NAMESPACE" \
+              --repository "$REPOSITORY" \
+              --message "$MESSAGE" \
+              --domain 'https://app.lab1.blueharvest.cloud'`
 
             echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, IS_MAIN_BRANCH: $IS_MAIN_BRANCH";
             echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
             echo "COMMIT_TIMESTAMP: $COMMIT_TIMESTAMP, REPOSITORY: $REPOSITORY, COMMIT_URL: $COMMIT_URL, NAMESPACE: $NAMESPACE"
-
-            npm -v
+            echo "PUSH_ID: $PUSH_ID"
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
