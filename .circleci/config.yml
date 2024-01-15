@@ -47,7 +47,7 @@ jobs:
               --message "$MESSAGE" \
               --domain 'https://app.lab1.blueharvest.cloud'`
 
-            npm run -s push-status $PUSH_ID \
+            npm run -s push-status -- $PUSH_ID \
               --organization 'default' \
               --project 'push-rework' \
               --domain 'https://app.lab1.blueharvest.cloud'
