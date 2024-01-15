@@ -28,14 +28,16 @@ jobs:
             REPOSITORY=$(basename $REPO_URL);
             AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
             MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
-            COMMIT_TIMESTAMP="$(git log --format=%ci $COMMIT_SHA^!)";            
-            COMMIT_URL="$REPO_URL/commit/$COMMIT_SHA"
+            COMMIT_TIMESTAMP="$(git log --format=%cI $COMMIT_SHA^!)";            
+            
 
             NAMESPACE=""
 
             if [[ $PROVIDER == 'github_app' ]]; then
+              COMMIT_URL="$REPO_URL/commit/$COMMIT_SHA"
               NAMESPACE="$(basename $(echo "$REPO_URL" | sed "s/$REPOSITORY//p"))"
             elif [[ $PROVIDER == 'gitlab' ]]; then
+              COMMIT_URL="$REPO_URL/-/commit/$COMMIT_SHA"
               NAMESPACE=""
             fi
            
@@ -44,8 +46,7 @@ jobs:
             
             if [[ $DEFAULT_BRANCH == $CURRENT_BRANCH ]]; then
               IS_MAIN_BRANCH=true;
-            fi 
-            
+            fi
           
             # pushId=`npm run -s push -- docs/s-petstore.yaml \
             #   --organization 'default' \
@@ -60,9 +61,9 @@ jobs:
             #   --repository "$REPOSITORY" \
             #   --message "$MESSAGE" \
             #   --domain 'https://app.lab1.blueharvest.cloud'`
-            echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, IS_MAIN_BRANCH: $IS_MAIN_BRANCH";
-            echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
-            echo "COMMIT_TIMESTAMP: $COMMIT_TIMESTAMP, REPOSITORY: $REPOSITORY, COMMIT_URL: $COMMIT_URL, NAMESPACE: $NAMESPACE"
+            # echo "VCS: $VCS , CURRENT_BRANCH: $CURRENT_BRANCH , COMMIT_SHA: $COMMIT_SHA, IS_MAIN_BRANCH: $IS_MAIN_BRANCH";
+            # echo "DEFAULT_BRANCH: $DEFAULT_BRANCH , AUTHOR: $AUTHOR, MESSAGE: $MESSAGE, PROVIDER: $PROVIDER";
+            # echo "COMMIT_TIMESTAMP: $COMMIT_TIMESTAMP, REPOSITORY: $REPOSITORY, COMMIT_URL: $COMMIT_URL, NAMESPACE: $NAMESPACE"
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
