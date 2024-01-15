@@ -11,16 +11,16 @@ jobs:
       REPO_URL: << pipeline.project.git_url >>
       REPO_NAME: << pipeline.trigger_parameters.github_app.repo_name >>
       CURRENT_BRANCH: << pipeline.trigger_parameters.github_app.branch >>
-      DEFAULT_BRANCH: << pipeline.trigger_parameters.github_app.default_branch >>
       MESSAGE: << pipeline.trigger_parameters.github_app.commit_message >>
       COMMIT_TIMESTAMP: << pipeline.trigger_parameters.github_app.commit_timestamp >>
-      AUTHOR_NAME: << pipeline.trigger_parameters.github_app.author_name >>
-      AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.author_email >>
     steps:
       - checkout
       - run:
           name: "Push files"
           command: |-
+            REMOTE_INFO="$(git remote show $(git remote))";
+            DEFAULT_BRANCH=$(echo "$REMOTE_INFO" | sed -n '/HEAD branch/s/.*: //p');
+            AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
             NAMESPACE="$(basename $(echo "$REPO_URL" | sed "s/$REPO_NAME//p"))"
             COMMIT_URL="$REPO_URL/commit/$COMMIT_SHA";
             IS_MAIN_BRANCH=false;
