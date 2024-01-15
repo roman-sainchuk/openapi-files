@@ -1,56 +1,28 @@
 version: 2.1
-
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/configuration-reference/#jobs
 orbs:
   node: circleci/node@5.2.0
 jobs:
   push:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
       # TODO: use redocly/cli image
       - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/configuration-reference/#steps
-    environment:
-      VCS: << pipeline.project.type >>
-      PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
-      CURRENT_BRANCH: << pipeline.git.branch >>
+    environment: 
       COMMIT_SHA: << pipeline.git.revision >>
       REPO_URL: << pipeline.project.git_url >>
-      PROJECT_ID: << pipeline.trigger_parameters.gitlab.project_id >>
+      REPO_NAME: << pipeline.trigger_parameters.github_app.repo_name >>
+      CURRENT_BRANCH: << pipeline.trigger_parameters.github_app.branch >>
+      DEFAULT_BRANCH: << pipeline.trigger_parameters.github_app.default_branch >>
+      MESSAGE: << pipeline.trigger_parameters.github_app.commit_message >>
+      COMMIT_TIMESTAMP: << pipeline.trigger_parameters.github_app.commit_timestamp >>
+      AUTHOR_NAME: << pipeline.trigger_parameters.github_app.author_name >>
+      AUTHOR_EMAIL: << pipeline.trigger_parameters.github_app.author_email >>
     steps:
       - checkout
-      - node/install:
-          node-version: "20.4.0"
-      - node/install-packages
       - run:
-          name: "Push"
-
+          name: "Push files"
           command: |-
-            echo "PROJECT_ID: $PROJECT_ID"
-
-
-
-            REMOTE_INFO="$(git remote show $(git remote))";
-            DEFAULT_BRANCH=$(echo "$REMOTE_INFO" | sed -n '/HEAD branch/s/.*: //p');
-            REPOSITORY=$(basename $REPO_URL);
-            AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
-            MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
-            COMMIT_TIMESTAMP="$(git log --format=%cI $COMMIT_SHA^!)";            
-
-            NAMESPACE=""
-
-            if [[ $PROVIDER == 'github_app' ]]; then
-              COMMIT_URL="$REPO_URL/commit/$COMMIT_SHA"
-              NAMESPACE="$(basename $(echo "$REPO_URL" | sed "s/$REPOSITORY//p"))"
-            elif [[ $PROVIDER == 'gitlab' ]]; then
-              COMMIT_URL="$REPO_URL/-/commit/$COMMIT_SHA"
-              NAMESPACE=""
-            fi
-
-
+            NAMESPACE="$(basename $(echo "$REPO_URL" | sed "s/$REPO_NAME//p"))"
+            COMMIT_URL="$REPO_URL/commit/$COMMIT_SHA";
             IS_MAIN_BRANCH=false;
 
             if [[ $DEFAULT_BRANCH == $CURRENT_BRANCH ]]; then
@@ -63,23 +35,20 @@ jobs:
               --mountPath 'docs/remotes/cicd' \
               --isMainBranch $IS_MAIN_BRANCH \
               --branch "$CURRENT_BRANCH" \
-              --author "$AUTHOR" \
+              --author "$AUTHOR_NAME <$AUTHOR_EMAIL>" \
               --commitSha "$COMMIT_SHA" \
               --commitUrl "$COMMIT_URL" \
               --createdAt "$COMMIT_TIMESTAMP" \
-              --namespace "$NAMESPACE" \
-              --repository "$REPOSITORY" \
+              --repository "$REPO_NAME" \
+              --namespace "$NAMESPACE"
               --message "$MESSAGE" \
               --domain 'https://app.lab1.blueharvest.cloud'`
 
-            npm run -s push-status $PUSH_ID -- \
+            npm run -s push-status $PUSH_ID \
               --organization 'default' \
               --project 'push-rework' \
-              --domain 'https://app.lab1.blueharvest.cloud' \
-              --wait
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/configuration-reference/#workflows
+              --domain 'https://app.lab1.blueharvest.cloud'`
 workflows:
-  push-to-redocly:
+  prepare-config:
     jobs:
       - push
