@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "push": "redocly push",
+    "push-status": "redocly push-status"
+  },
+  "dependencies": {
+    "@redocly/cli": "file:redocly-cli.tgz"
+  }
+}
