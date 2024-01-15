@@ -9,11 +9,11 @@ jobs:
     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
-    # TODO: use redocly/cli image
+      # TODO: use redocly/cli image
       - image: cimg/base:stable
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
-    environment: 
+    environment:
       VCS: << pipeline.project.type >>
       PROVIDER: << pipeline.trigger_parameters.circleci.trigger_type >>
       CURRENT_BRANCH: << pipeline.git.branch >>
@@ -21,10 +21,12 @@ jobs:
       REPO_URL: << pipeline.project.git_url >>
     steps:
       - checkout
+      - node/install:
+          node-version: "20.4.0"
       - node/install-packages
       - run:
           name: "Push"
-          
+
           command: |-
             REMOTE_INFO="$(git remote show $(git remote))";
             DEFAULT_BRANCH=$(echo "$REMOTE_INFO" | sed -n '/HEAD branch/s/.*: //p');
@@ -32,7 +34,7 @@ jobs:
             AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
             MESSAGE="$(git log --format='%B' $COMMIT_SHA^!)";
             COMMIT_TIMESTAMP="$(git log --format=%cI $COMMIT_SHA^!)";            
-            
+
 
             NAMESPACE=""
 
@@ -43,14 +45,14 @@ jobs:
               COMMIT_URL="$REPO_URL/-/commit/$COMMIT_SHA"
               NAMESPACE=""
             fi
-           
-            
+
+
             IS_MAIN_BRANCH=false;
-            
+
             if [[ $DEFAULT_BRANCH == $CURRENT_BRANCH ]]; then
               IS_MAIN_BRANCH=true;
             fi
-          
+
             # pushId=`npm run -s push -- docs/s-petstore.yaml \
             #   --organization 'default' \
             #   --project 'pushes-demo' \
