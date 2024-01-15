@@ -38,7 +38,7 @@ jobs:
               --mountPath 'docs/remotes/cicd' \
               --isMainBranch $IS_MAIN_BRANCH \
               --branch "$CURRENT_BRANCH" \
-              --author "$AUTHOR_NAME <$AUTHOR_EMAIL>" \
+              --author "$AUTHOR" \
               --commitSha "$COMMIT_SHA" \
               --commitUrl "$COMMIT_URL" \
               --createdAt "$COMMIT_TIMESTAMP" \
@@ -52,6 +52,6 @@ jobs:
               --project 'push-rework' \
               --domain 'https://app.lab1.blueharvest.cloud'`
 workflows:
-  prepare-config:
+  push-to-redocly:
     jobs:
       - push
