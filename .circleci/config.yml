@@ -50,7 +50,7 @@ jobs:
             npm run -s push-status $PUSH_ID \
               --organization 'default' \
               --project 'push-rework' \
-              --domain 'https://app.lab1.blueharvest.cloud'`
+              --domain 'https://app.lab1.blueharvest.cloud'
 workflows:
   push-to-redocly:
     jobs:
