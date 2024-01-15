@@ -40,7 +40,7 @@ jobs:
               --commitUrl "$COMMIT_URL" \
               --createdAt "$COMMIT_TIMESTAMP" \
               --repository "$REPO_NAME" \
-              --namespace "$NAMESPACE"
+              --namespace "$NAMESPACE" \
               --message "$MESSAGE" \
               --domain 'https://app.lab1.blueharvest.cloud'`
 
