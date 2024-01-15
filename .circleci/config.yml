@@ -15,6 +15,9 @@ jobs:
       COMMIT_TIMESTAMP: << pipeline.trigger_parameters.github_app.commit_timestamp >>
     steps:
       - checkout
+      - node/install:
+          node-version: "20.4.0"
+      - node/install-packages
       - run:
           name: "Push files"
           command: |-
