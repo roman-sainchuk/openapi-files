@@ -148,7 +148,7 @@ workflows:
           project: "push-rework"
           mountPath: "docs/remotes/cicd"
           domain: "https://app.lab1.blueharvest.cloud"
-          repositoryName: "<< pipeline.trigger_parameters.github_app.repo_name >>"
+          repositoryName: "My-repository"
           commitMessage: "<< pipeline.trigger_parameters.github_app.commit_message >>"
           commitUrl: "<< pipeline.project.git_url >>/commit/<< pipeline.git.revision >>"
           commitTimestamp: "<< pipeline.trigger_parameters.github_app.commit_timestamp >>"
