@@ -94,7 +94,7 @@ jobs:
 
             REPO_NAME="<< parameters.repositoryName >>";
 
-            if [[ "<< pipeline.project.type >>" != "gitlab" ]]; then
+            if [[ "<< pipeline.trigger_parameters.circleci.trigger_type >>" != "gitlab" ]]; then
               REPO_NAME=${REPO_NAME:-$(basename "<< parameters.repositoryUrl >>")};
               NAMESPACE="$(basename $(echo "<< parameters.repositoryUrl >>" | sed "s/$REPO_NAME//p"))"
             fi
