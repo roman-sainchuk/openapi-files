@@ -6,13 +6,58 @@ jobs:
     docker:
       # TODO: use redocly/cli image
       - image: cimg/base:stable
-    environment: 
-      COMMIT_SHA: << pipeline.git.revision >>
-      REPO_URL: << pipeline.project.git_url >>
-      REPO_NAME: << pipeline.trigger_parameters.github_app.repo_name >>
-      CURRENT_BRANCH: << pipeline.trigger_parameters.github_app.branch >>
-      MESSAGE: << pipeline.trigger_parameters.github_app.commit_message >>
-      COMMIT_TIMESTAMP: << pipeline.trigger_parameters.github_app.commit_timestamp >>
+    parameters:
+      files:
+        description: Files to push
+        type: string
+      organization:
+        description: Organization name
+        type: string
+      project:
+        description: Project name
+        type: string
+      mountPath:
+        description: Mount path
+        type: string
+      commitSha:
+        description: Commit SHA
+        type: string
+        default: "<< pipeline.git.revision >>"
+      commitUrl:
+        description: Commit URL
+        type: string
+      currentBranch:
+        description: Current branch
+        type: string
+        default: "<< pipeline.git.branch >>"
+      defaultBranch:
+        description: Default branch
+        type: string
+        default: ""
+      commitAuthor:
+        description: Commit author
+        type: string
+        default: ""
+      commitMessage:
+        description: Commit message
+        type: string
+        default: ""
+      commitTimestamp:
+        description: Commit timestamp
+        type: string
+        default: ""
+      repositoryUrl:
+        description: Repository URL
+        type: string
+        default: "<< pipeline.project.git_url >>"
+      repositoryName:
+        description: Repository name
+        type: string
+        default: ""
+      domain:
+        description: Domain name
+        type: string
+        default: "https://app.cloud.redocly.com"
     steps:
       - checkout
       - node/install:
@@ -21,21 +66,61 @@ jobs:
       - run:
           name: "Push files"
           command: |-
-            REMOTE_INFO="$(git remote show $(git remote))";
-            DEFAULT_BRANCH=$(echo "$REMOTE_INFO" | sed -n '/HEAD branch/s/.*: //p');
-            AUTHOR="$(git log --format='%an <%ae>' $COMMIT_SHA^!)";
-            NAMESPACE="$(basename $(echo "$REPO_URL" | sed "s/$REPO_NAME//p"))"
-            COMMIT_URL="$REPO_URL/commit/$COMMIT_SHA";
+            COMMIT_SHA="<< parameters.commitSha >>";
+            CURRENT_BRANCH="<< parameters.currentBranch >>";
+            
+            # Set default branch to current branch if not set
+            
+            DEFAULT_BRANCH="<< parameters.defaultBranch >>";
+            DEFAULT_BRANCH=${DEFAULT_BRANCH:-$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')};
+            
+            # Set author
+
+            AUTHOR="<< parameters.commitAuthor >>";
+            AUTHOR=${AUTHOR:-$(git log --format='%an <%ae>' $COMMIT_SHA^!)};
+
+            # Set commit data
+
+            COMMIT_MESSAGE="<< parameters.commitMessage >>";
+            COMMIT_MESSAGE=${COMMIT_MESSAGE:-$(git log --format=%B $COMMIT_SHA^!)};
+
+            COMMIT_URL="<< parameters.commitUrl >>";
+            COMMIT_URL=${COMMIT_URL:-"<< parameters.repositoryUrl >>/commits/$COMMIT_SHA"};
+
+            COMMIT_TIMESTAMP="<< parameters.commitTimestamp >>";
+            COMMIT_TIMESTAMP=${COMMIT_TIMESTAMP:-$(git log --format=%cI $COMMIT_SHA^!)};
+
+            # Set repository data
+
+            REPO_NAME="<< parameters.repositoryName >>";
+
+            if [[ "<< pipeline.project.type >>" != "gitlab" ]]; then
+              REPO_NAME=${REPO_NAME:-$(basename "<< parameters.repositoryUrl >>")};
+              NAMESPACE="$(basename $(echo "<< parameters.repositoryUrl >>" | sed "s/$REPO_NAME//p"))"
+            fi
+
             IS_MAIN_BRANCH=false;
 
             if [[ $DEFAULT_BRANCH == $CURRENT_BRANCH ]]; then
               IS_MAIN_BRANCH=true;
             fi
 
-            PUSH_ID=`npm run -s push -- docs \
-              --organization 'default' \
-              --project 'push-rework' \
-              --mountPath 'docs/remotes/cicd' \
+            echo "IS_MAIN_BRANCH=$IS_MAIN_BRANCH";
+            echo "CURRENT_BRANCH=$CURRENT_BRANCH";
+            echo "DEFAULT_BRANCH=$DEFAULT_BRANCH";
+            echo "AUTHOR=$AUTHOR";
+            echo "COMMIT_SHA=$COMMIT_SHA";
+            echo "COMMIT_URL=$COMMIT_URL";
+            echo "COMMIT_TIMESTAMP=$COMMIT_TIMESTAMP";
+            echo "COMMIT_MESSAGE=$COMMIT_MESSAGE";
+            echo "REPO_NAME=$REPO_NAME";
+            echo "NAMESPACE=$NAMESPACE";
+
+
+            PUSH_ID=`npm run -s push -- << parameters.files >> \
+              --organization << parameters.organization >> \
+              --project << parameters.project >> \
+              --mountPath << parameters.mountPath >> \
               --isMainBranch $IS_MAIN_BRANCH \
               --branch "$CURRENT_BRANCH" \
               --author "$AUTHOR" \
@@ -44,15 +129,26 @@ jobs:
               --createdAt "$COMMIT_TIMESTAMP" \
               --repository "$REPO_NAME" \
               --namespace "$NAMESPACE" \
-              --message "$MESSAGE" \
-              --domain 'https://app.lab1.blueharvest.cloud'`
+              --message "$COMMIT_MESSAGE" \
+              --domain << parameters.domain >>`
+
+            echo "PUSH_ID=$PUSH_ID";
 
             npm run -s push-status -- $PUSH_ID \
-              --organization 'default' \
-              --project 'push-rework' \
-              --domain 'https://app.lab1.blueharvest.cloud' \
+              --organization << parameters.organization >> \
+              --project << parameters.project >> \
+              --domain << parameters.domain >> \
               --wait
 workflows:
   push-to-redocly:
     jobs:
-      - push
+      - push:
+          files: "docs"
+          organization: "default"
+          project: "push-rework"
+          mountPath: "docs/remotes/cicd"
+          domain: "https://app.lab1.blueharvest.cloud"
+          repositoryName: "<< pipeline.trigger_parameters.github_app.repo_name >>"
+          commitMessage: "<< pipeline.trigger_parameters.github_app.commit_message >>"
+          commitUrl: "<< pipeline.project.git_url >>/commit/<< pipeline.git.revision >>"
+          commitTimestamp: "<< pipeline.trigger_parameters.github_app.commit_timestamp >>"
