@@ -105,18 +105,6 @@ jobs:
               IS_MAIN_BRANCH=true;
             fi
 
-            echo "IS_MAIN_BRANCH=$IS_MAIN_BRANCH";
-            echo "CURRENT_BRANCH=$CURRENT_BRANCH";
-            echo "DEFAULT_BRANCH=$DEFAULT_BRANCH";
-            echo "AUTHOR=$AUTHOR";
-            echo "COMMIT_SHA=$COMMIT_SHA";
-            echo "COMMIT_URL=$COMMIT_URL";
-            echo "COMMIT_TIMESTAMP=$COMMIT_TIMESTAMP";
-            echo "COMMIT_MESSAGE=$COMMIT_MESSAGE";
-            echo "REPO_NAME=$REPO_NAME";
-            echo "NAMESPACE=$NAMESPACE";
-
-
             PUSH_ID=`npm run -s push -- << parameters.files >> \
               --organization << parameters.organization >> \
               --project << parameters.project >> \
@@ -132,8 +120,6 @@ jobs:
               --message "$COMMIT_MESSAGE" \
               --domain << parameters.domain >>`
 
-            echo "PUSH_ID=$PUSH_ID";
-
             npm run -s push-status -- $PUSH_ID \
               --organization << parameters.organization >> \
               --project << parameters.project >> \
@@ -148,7 +134,7 @@ workflows:
           project: "push-rework"
           mountPath: "docs/remotes/cicd"
           domain: "https://app.lab1.blueharvest.cloud"
-          repositoryName: "My-repository"
+          repositoryName: "<< pipeline.trigger_parameters.github_app.repo_name >>"
           commitMessage: "<< pipeline.trigger_parameters.github_app.commit_message >>"
           commitUrl: "<< pipeline.project.git_url >>/commit/<< pipeline.git.revision >>"
           commitTimestamp: "<< pipeline.trigger_parameters.github_app.commit_timestamp >>"
