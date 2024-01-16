@@ -19,6 +19,10 @@ jobs:
       mountPath:
         description: Mount path
         type: string
+      provider:
+        description: Provider name
+        type: enum
+        enum: ['github', 'gitlab', 'bitbucket']
       commitSha:
         description: Commit SHA
         type: string
@@ -93,9 +97,9 @@ jobs:
             # Set repository data
 
             REPO_NAME="<< parameters.repositoryName >>";
+            REPO_NAME=${REPO_NAME:-$(basename "<< parameters.repositoryUrl >>")};
 
-            if [[ "<< pipeline.trigger_parameters.circleci.trigger_type >>" != "gitlab" ]]; then
-              REPO_NAME=${REPO_NAME:-$(basename "<< parameters.repositoryUrl >>")};
+            if [[ "<< parameters.provider >>" != "gitlab" ]]; then
               NAMESPACE="$(basename $(echo "<< parameters.repositoryUrl >>" | sed "s/$REPO_NAME//p"))"
             fi
 
@@ -134,6 +138,7 @@ workflows:
           project: "push-rework"
           mountPath: "docs/remotes/cicd"
           domain: "https://app.lab1.blueharvest.cloud"
+          provider: "github"
           repositoryName: "<< pipeline.trigger_parameters.github_app.repo_name >>"
           commitMessage: "<< pipeline.trigger_parameters.github_app.commit_message >>"
           commitUrl: "<< pipeline.project.git_url >>/commit/<< pipeline.git.revision >>"
