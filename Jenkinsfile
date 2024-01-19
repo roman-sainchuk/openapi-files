@@ -23,7 +23,7 @@ pipeline {
                         DEFAULT_BRANCH=$BRANCH_NAME;
                     fi
 
-                    if [[ -n $REPO_URL ]]; then
+                    if [[ -n "$REPO_URL" ]]; then
                         COMMIT_URL=$REPO_URL/commit/$GIT_COMMIT;
                     fi
                     
