@@ -11,6 +11,8 @@ pipeline {
             steps {
                 sh '''
                     apk add --no-cache git;
+
+                    git config --global --add safe.directory "$PWD";
                     
                     DEFAULT_BRANCH="";
                     REPO_URL="";
