@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker { 
+            image 'redocly/cli' 
+        }
+    }
 
     stages {
         stage('Push to redocly') {
