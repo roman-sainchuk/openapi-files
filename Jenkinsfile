@@ -6,7 +6,6 @@ pipeline {
             steps {
                 sh '''
                     printenv;
-
                 '''
             }
         }
