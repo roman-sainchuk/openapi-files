@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker { 
             image 'redocly/cli' 
+            args '-u root'
         }
     }
 
@@ -9,6 +10,8 @@ pipeline {
         stage('Push to redocly') {
             steps {
                 sh '''
+                    apk add --no-cache git;
+                    
                     DEFAULT_BRANCH="";
                     REPO_URL="";
                     REPOSITORY="";
