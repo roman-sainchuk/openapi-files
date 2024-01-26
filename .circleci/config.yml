@@ -1,11 +1,8 @@
 version: 2.1
-orbs:
-  node: circleci/node@5.2.0
 jobs:
   push:
     docker:
-      # TODO: use redocly/cli image
-      - image: cimg/base:stable
+      - image: redocly/cli
     parameters:
       files:
         description: Files to push
@@ -19,127 +16,81 @@ jobs:
       mountPath:
         description: Mount path
         type: string
-      provider:
-        description: Provider name
-        type: enum
-        enum: ['github', 'gitlab', 'bitbucket']
       commitSha:
         description: Commit SHA
         type: string
-        default: "<< pipeline.git.revision >>"
+        default: '<< pipeline.git.revision >>'
       commitUrl:
         description: Commit URL
         type: string
       currentBranch:
         description: Current branch
         type: string
-        default: "<< pipeline.git.branch >>"
+        default: '<< pipeline.git.branch >>'
       defaultBranch:
         description: Default branch
         type: string
-        default: ""
-      commitAuthor:
-        description: Commit author
-        type: string
-        default: ""
+        default: 'main'
       commitMessage:
         description: Commit message
         type: string
-        default: ""
       commitTimestamp:
         description: Commit timestamp
         type: string
-        default: ""
       repositoryUrl:
         description: Repository URL
         type: string
-        default: "<< pipeline.project.git_url >>"
+        default: '<< pipeline.project.git_url >>'
       repositoryName:
         description: Repository name
         type: string
-        default: ""
+      namespace:
+        description: Repository owner
+        type: string
+        default: ''
       domain:
         description: Domain name
         type: string
-        default: "https://app.cloud.redocly.com"
+        default: 'https://app.cloud.redocly.com'
     steps:
       - checkout
-      - node/install:
-          node-version: "20.4.0"
-      - node/install-packages
       - run:
-          name: "Push files"
+          name: "Push files and wait for deployment"
           command: |-
+            apk add --no-cache git;
+            
             COMMIT_SHA="<< parameters.commitSha >>";
-            CURRENT_BRANCH="<< parameters.currentBranch >>";
-            
-            # Set default branch to current branch if not set
-            
-            DEFAULT_BRANCH="<< parameters.defaultBranch >>";
-            DEFAULT_BRANCH=${DEFAULT_BRANCH:-$(git remote show $(git remote) | sed -n '/HEAD branch/s/.*: //p')};
-            
-            # Set author
-
-            AUTHOR="<< parameters.commitAuthor >>";
-            AUTHOR=${AUTHOR:-$(git log --format='%an <%ae>' $COMMIT_SHA^!)};
-
-            # Set commit data
-
-            COMMIT_MESSAGE="<< parameters.commitMessage >>";
-            COMMIT_MESSAGE=${COMMIT_MESSAGE:-$(git log --format=%B $COMMIT_SHA^!)};
-
-            COMMIT_URL="<< parameters.commitUrl >>";
-            COMMIT_URL=${COMMIT_URL:-"<< parameters.repositoryUrl >>/commits/$COMMIT_SHA"};
-
-            COMMIT_TIMESTAMP="<< parameters.commitTimestamp >>";
-            COMMIT_TIMESTAMP=${COMMIT_TIMESTAMP:-$(git log --format=%cI $COMMIT_SHA^!)};
-
-            # Set repository data
-
             REPO_NAME="<< parameters.repositoryName >>";
-            REPO_NAME=${REPO_NAME:-$(basename "<< parameters.repositoryUrl >>")};
+            NAMESPACE="<< parameters.namespace >>"
+            NAMESPACE="$(basename $(echo "<< parameters.repositoryUrl >>" | sed "s/$REPO_NAME//p"))"
 
-            if [[ "<< parameters.provider >>" != "gitlab" ]]; then
-              NAMESPACE="$(basename $(echo "<< parameters.repositoryUrl >>" | sed "s/$REPO_NAME//p"))"
-            fi
-
-            IS_MAIN_BRANCH=false;
-
-            if [[ $DEFAULT_BRANCH == $CURRENT_BRANCH ]]; then
-              IS_MAIN_BRANCH=true;
-            fi
-
-            PUSH_ID=`npm run -s push -- << parameters.files >> \
-              --organization << parameters.organization >> \
-              --project << parameters.project >> \
-              --mountPath << parameters.mountPath >> \
-              --isMainBranch $IS_MAIN_BRANCH \
-              --branch "$CURRENT_BRANCH" \
-              --author "$AUTHOR" \
-              --commitSha "$COMMIT_SHA" \
-              --commitUrl "$COMMIT_URL" \
-              --createdAt "$COMMIT_TIMESTAMP" \
+            redocly push << parameters.files >> \
+              --organization "<< parameters.organization >>" \
+              --project "<< parameters.project >>" \
+              --mount-path "<< parameters.mountPath >>" \
+              --default-branch "<< parameters.defaultBranch >>" \
+              --branch "<< parameters.currentBranch >>" \
+              --author "$(git log --format='%an <%ae>' $COMMIT_SHA^!)" \
+              --commit-sha "$COMMIT_SHA" \
+              --commit-url "<< parameters.commitUrl >>" \
+              --created-at "<< parameters.commitTimestamp >>" \
               --repository "$REPO_NAME" \
               --namespace "$NAMESPACE" \
-              --message "$COMMIT_MESSAGE" \
-              --domain << parameters.domain >>`
-
-            npm run -s push-status -- $PUSH_ID \
-              --organization << parameters.organization >> \
-              --project << parameters.project >> \
-              --domain << parameters.domain >> \
-              --wait
+              --message "<< parameters.commitMessage >>" \
+              --domain "<< parameters.domain >>" \
+              --wait-for-deployment
 workflows:
   push-to-redocly:
     jobs:
       - push:
-          files: "docs"
-          organization: "default"
-          project: "push-rework"
-          mountPath: "docs/remotes/cicd"
-          domain: "https://app.lab1.blueharvest.cloud"
-          provider: "github"
-          repositoryName: "<< pipeline.trigger_parameters.github_app.repo_name >>"
-          commitMessage: "<< pipeline.trigger_parameters.github_app.commit_message >>"
-          commitUrl: "<< pipeline.project.git_url >>/commit/<< pipeline.git.revision >>"
-          commitTimestamp: "<< pipeline.trigger_parameters.github_app.commit_timestamp >>"
+          files: 'docs'
+          organization: 'default'
+          project: 'push-rework'
+          mountPath: '/docs/remotes/cicd'
+          domain: 'https://app.lab1.blueharvest.cloud'
+          repositoryName: '<< pipeline.trigger_parameters.github_app.repo_name >>'
+          commitMessage: '<< pipeline.trigger_parameters.github_app.commit_message >>'
+          commitUrl: '<< pipeline.project.git_url >>/commit/<< pipeline.git.revision >>'
+          commitTimestamp: '<< pipeline.trigger_parameters.github_app.commit_timestamp >>'
+          defaultBranch: 'main'
+          namespace: 'roman-sainchuk'
