@@ -1,0 +1,51 @@
+{
+    "rules": [],
+    "levelNames": [
+        "lint"
+    ],
+    "scorecardData": {
+        "/petstore/petstoredfssd/": {
+            "title": "Swagger Petstore",
+            "levels": {
+                "lint": {
+                    "errors": 1,
+                    "ignored": 1,
+                    "problems": [],
+                    "warnings": 0
+                }
+            },
+            "status": "Highest",
+            "targetLevel": "lint",
+            "relativePath": "petstore/petstore.yaml"
+        },
+        "/petstore-new-version/petstoаdffre/": {
+            "title": "Another Swagger Petstore",
+            "levels": {
+                "lint": {
+                    "errors": 0,
+                    "ignored": 0,
+                    "problems": [],
+                    "warnings": 0
+                }
+            },
+            "status": "Highest",
+            "targetLevel": "lint",
+            "relativePath": "petstore-new-version/petstore.yaml"
+        },
+        "/apis/roman-sainchuk/openapi-file/another-swagger-petstoresdsd/petstore/": {
+            "title": "Another Swagger Petstore",
+            "levels": {
+                "lint": {
+                    "errors": 0,
+                    "ignored": 0,
+                    "problems": [],
+                    "warnings": 0
+                }
+            },
+            "status": "Highest",
+            "version": "latest",
+            "targetLevel": "lint",
+            "relativePath": "apis/Roman Sainchuk/openapi-file/Another Swagger Petstore/@latest/petstore.yaml"
+        }
+    }
+}
