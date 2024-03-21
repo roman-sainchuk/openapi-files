@@ -1,9 +1,12 @@
 {
+  "name": "realm-example",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Realm example",
   "scripts": {
-    "push": "redocly push",
-    "push-status": "redocly push-status"
+    "start": "realm develop"
   },
   "dependencies": {
-    "@redocly/cli": "file:redocly-cli.tgz"
+    "@redocly/realm": "0.69.0"
   }
 }
