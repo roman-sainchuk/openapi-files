@@ -18,7 +18,7 @@ rbac:
     '**':
       anonymous: none
       authenticated: read
-    docs:
+    docs/*:
       authenticated: write
 
 theme:
