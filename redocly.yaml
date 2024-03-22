@@ -15,8 +15,9 @@
 # sso:
 rbac:
   content:
-    docs:
-      '*': read
+    '**':
+      anonymous: none
+      authenticated: read
 
 theme:
   # imports:
