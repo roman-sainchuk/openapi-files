@@ -18,6 +18,8 @@ rbac:
     '**':
       anonymous: none
       authenticated: read
+    docs:
+      authenticated: write
 
 theme:
   # imports:
